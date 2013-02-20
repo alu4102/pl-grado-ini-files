@@ -13,7 +13,8 @@ function calculate(evt) {
       var contents = e.target.result;
       
       out.className = 'unhidden';
-      var pretty = JSON.stringify(lexer(contents), undefined, 2);
+      var tokens = lexer(contents);
+      var pretty = tokensToString(tokens);
       
       initialinput.innerHTML = contents;
       finaloutput.innerHTML = pretty;
@@ -24,12 +25,25 @@ function calculate(evt) {
   }
 }
 
+var temp = '<li> <span class = "<%= t.type %>"> <%= s %> </span>\n';
+
+function tokensToString(tokens) {
+   var r = '';
+   for(var i in tokens) {
+     var t = tokens[i];
+     var s = JSON.stringify(t, undefined, 2);
+     s = _.template(temp, {t: t, s: s});
+     r += s;
+   }
+   return '<ol>\n'+r+'</ol>';
+}
+
 function lexer(contents) {
-  var blanks    = /^\s+/;
-  var iniheader = /^\[([^\]\r\n]+)\]/;
-  var comments  = /^[;#](.*)/;
+  var blanks         = /^\s+/;
+  var iniheader      = /^\[([^\]\r\n]+)\]/;
+  var comments       = /^[;#](.*)/;
   var nameEqualValue = /^([^=;\r\n]+)=([^;\r\n]*)/;
-  var dot       = /^./;
+  var any            = /^(.|\n)*/;
 
   var input = contents;
   var out = [];
@@ -38,23 +52,23 @@ function lexer(contents) {
   while (input) {
     if (m = blanks.exec(input)) {
       input = input.replace(blanks,'');
-      out.push({ blanks: m });
+      out.push({ type : 'blanks', match: m });
     }
     else if (m = iniheader.exec(input)) {
       input = input.replace(iniheader,'');
-      out.push({ header: m });
+      out.push({ type: 'header', match: m });
     }
     else if (m = comments.exec(input)) {
       input = input.replace(comments,'');
-      out.push({ comments : m });
+      out.push({ type: 'comments', match: m });
     }
     else if (m = nameEqualValue.exec(input)) {
       input = input.replace(nameEqualValue,'');
-      out.push({ nameEqualValue : m });
+      out.push({ type: 'nameEqualValue', match: m });
     }
     else {
-      input = input.replace(dot,'');
-      out.push({ dot: m });
+      out.push({ type: 'error', match: input });
+      input = input.replace(any,'');
     }
   }
   return out;
