@@ -1,0 +1,13 @@
+ETSII ULL Grado de Informatica 
+Asignatura Procesadores de Lenguajes
+Cuarta Práctica:
+
+INI files. The app reads an input INI file
+and process it.
+
+Files:
+  ini.js
+  index.html
+  input*.ini
+  global.css
+  README
