@@ -4,6 +4,7 @@ $(document).ready(function() {
    $("#fileinput").change(calculate);
 });
 
+// main
 function calculate(evt) {
   var f = evt.target.files[0]; 
 
@@ -12,10 +13,10 @@ function calculate(evt) {
     r.onload = function(e) { 
       var contents = e.target.result;
       
-      out.className = 'unhidden';
       var tokens = lexer(contents);
       var pretty = tokensToString(tokens);
       
+      out.className = 'unhidden';
       initialinput.innerHTML = contents;
       finaloutput.innerHTML = pretty;
     }
@@ -38,37 +39,40 @@ function tokensToString(tokens) {
    return '<ol>\n'+r+'</ol>';
 }
 
-function lexer(contents) {
+function lexer(input) {
   var blanks         = /^\s+/;
   var iniheader      = /^\[([^\]\r\n]+)\]/;
   var comments       = /^[;#](.*)/;
   var nameEqualValue = /^([^=;\r\n]+)=([^;\r\n]*)/;
-  var any            = /^(.|\n)*/;
+  var any            = /^(.|\n)+/;
 
-  var input = contents;
   var out = [];
   var m = null;
 
-  while (input) {
+  while (input != '') {
     if (m = blanks.exec(input)) {
-      input = input.replace(blanks,'');
+      input = input.substr(m.index+m[0].length);
       out.push({ type : 'blanks', match: m });
     }
     else if (m = iniheader.exec(input)) {
-      input = input.replace(iniheader,'');
+      input = input.substr(m.index+m[0].length);
       out.push({ type: 'header', match: m });
     }
     else if (m = comments.exec(input)) {
-      input = input.replace(comments,'');
+      input = input.substr(m.index+m[0].length);
       out.push({ type: 'comments', match: m });
     }
     else if (m = nameEqualValue.exec(input)) {
-      input = input.replace(nameEqualValue,'');
+      input = input.substr(m.index+m[0].length);
       out.push({ type: 'nameEqualValue', match: m });
     }
+    else if (m = any.exec(input)) {
+      out.push({ type: 'error', match: m });
+      input = '';
+    }
     else {
-      out.push({ type: 'error', match: input });
-      input = input.replace(any,'');
+      alert("Fatal Error!"+substr(input,0,20));
+      input = '';
     }
   }
   return out;
