@@ -4,7 +4,6 @@ $(document).ready(function() {
    $("#fileinput").change(calculate);
 });
 
-// main
 function calculate(evt) {
   var f = evt.target.files[0]; 
 
