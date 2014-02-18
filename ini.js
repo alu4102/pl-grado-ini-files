@@ -29,8 +29,8 @@ var temp = '<li> <span class = "<%= token.type %>"> <%= match %> </span>\n';
 
 function tokensToString(tokens) {
    var r = '';
-   for(var i in tokens) {
-     var t = tokens[i];
+   for(var i=0; i < tokens.length; i++) {
+     var t = tokens[i]
      var s = JSON.stringify(t, undefined, 2);
      s = _.template(temp, {token: t, match: s});
      r += s;
