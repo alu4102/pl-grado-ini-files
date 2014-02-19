@@ -1,25 +1,25 @@
 "use strict"; // Use ECMAScript 5 strict mode in browsers that support it
 
-$(document).ready(function() {
+$(document).ready(function() {               //cuando se carga el documento se llama a calculate()
    $("#fileinput").change(calculate);
 });
 
-function calculate(evt) {
-  var f = evt.target.files[0]; 
+function calculate(evt) {        
+  var f = evt.target.files[0];               
 
   if (f) {
     var r = new FileReader();
     r.onload = function(e) { 
       var contents = e.target.result;
       
-      var tokens = lexer(contents);
-      var pretty = tokensToString(tokens);
+      var tokens = lexer(contents);                   //lexer genera un array de tokens, los tokens son objetos
+      var pretty = tokensToString(tokens);            //convierte los objetos tokens en cadenas
       
       out.className = 'unhidden';
-      initialinput.innerHTML = contents;
-      finaloutput.innerHTML = pretty;
+      initialinput.innerHTML = contents;              //en la columna de la izq. volcamos el contenido original
+      finaloutput.innerHTML = pretty;                 //en la columna de la dch, volcamos el contenido convertido a string
     }
-    r.readAsText(f);
+   r.readAsText(f);                                   //leemos el fichero
   } else { 
     alert("Failed to load file");
   }
@@ -31,7 +31,7 @@ function tokensToString(tokens) {
    var r = '';
    for(var i=0; i < tokens.length; i++) {
      var t = tokens[i]
-     var s = JSON.stringify(t, undefined, 2);
+     var s = JSON.stringify(t, undefined, 2);               //convertimos el token[i] a cadena
      s = _.template(temp, {token: t, match: s});
      r += s;
    }
@@ -43,14 +43,14 @@ function lexer(input) {
   var iniheader      = /^\[([^\]\r\n]+)\]/;
   var comments       = /^[;#](.*)/;
   var nameEqualValue = /^([^=;\r\n]+)=([^;\r\n]*)/;
-  var any            = /^(.|\n)+/;
+  var any            = /^(.|\n)+/;                       //Casa con todo
 
-  var out = [];
-  var m = null;
+  var out = [];                                          //Array de tokens                                      
+  var m = null;                                          //match
 
   while (input != '') {
     if (m = blanks.exec(input)) {
-      input = input.substr(m.index+m[0].length);
+      input = input.substr(m.index+m[0].length);         //m.index es el lugar donde ocurrio el matching
       out.push({ type : 'blanks', match: m });
     }
     else if (m = iniheader.exec(input)) {
